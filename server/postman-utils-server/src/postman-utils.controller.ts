@@ -1,5 +1,4 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import * as fs from 'fs';
 import { PostmanUtilsService } from './postman-utils.service';
 import { FileContent } from './models/file-content';
 
