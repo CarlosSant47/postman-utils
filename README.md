@@ -3,8 +3,17 @@ Postman Utils es un conjuto de utilidades que ayudaran a explotar las maximas ca
 
 ## Setup
 Para hacer el uso de las utilidades, debemos copiar el contenido del archivo `postman-utils.js`, en la pestaña **Pre-request Script** de nuestra coleccion (Si tenemos mas de una coleccion debemos agreagarlo en cada una de ellas)
-![Texto alternativo](docs/pre-request-script.jpg)
-Para la funcionalidad de las utilidades se requiere la ejecucion de los server, contenidos en la carpeta `server`, en alguna de sus dos versiones de nodejs o php (Require PHP 8.1)
+![pre-request-script.jpg)](docs/pre-request-script.jpg)
+
+
+## Servidor
+Para la utilizacion de algunas de las utilidades, se requiere ejecutar un servidor desarrollado en NestJS, para algunas funciones como la lectura de archivos, guardado entre otras funciones que postman no nos permite directamente, podremos ejecutar el servidor de la siguiente manera.
+```bash
+npm install
+npm run start
+```
+El servidor se ejecutara en el puerto `8080`, puede ser cambiado desde el archivo `main.ts`, pero tambien debemos cambiar dicho puerto en nuestro  **Pre-request Script**
+
 
 ## Utilidades
 Al terminar de agregar el script a nuestra coleccion, al realizar cualquer **Request** podemos hacer uso de las utilidades precargadas.
