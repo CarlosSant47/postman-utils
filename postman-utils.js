@@ -6,6 +6,7 @@
  * @namespace utils
  * @author erhhung (Modified by Carlos Santiago(carlossant47))
  */
+const PORT = 8080;
 const utils = {
   // use the open interval hack to wait until async
   // operations are done before sending the request
@@ -52,46 +53,69 @@ const utils = {
       if (mode !== "raw") {
         throw new Error("Raw mode is required");
       }
-      const filesContent = [];
       const regex = /\{.*\| file_encoded\}/g;
+      const regexExtractValue = /\{(.*?) \| file_encoded\}/;
       const requestMatchFiles = raw.match(regex);
       if (!requestMatchFiles) {
         throw new Error("Not detected match files");
       }
-      for (const item in requestMatchFiles) {
-        const pathSentence = requestMatchFiles[item];
-        let pathMatch = pathSentence.match(/\{(.*?) \| file_encoded\}/);
-        let path = pathMatch ? pathMatch[1] : null;
-        if (!path) {
-          continue;
-        }
-        console.log(`utils.inyectedBase64FileRequiered -> Reading ${path}`);
+
+      const requestMatchFilesData = raw.match(regex).map((item) => {
+        return { value: item.match(regexExtractValue)[1], replace: item };
+      });
+
+      for (const item of requestMatchFilesData) {
+        console.log(
+          `utils.inyectedBase64FileRequiered -> Reading ${item.value}`
+        );
+        let content = null;
         try {
           const response = await this.sendRequest({
-            url: "http://localhost:8080/files?path=" + path,
+            url: `http://localhost:${PORT}/files?path=${item.value}`,
             method: "GET",
           });
-          if (response.code === 200) {
-            const data = response.json();
-            filesContent.push({ pathSentence, content: data.content });
+          if ((response.code = 200)) {
+            content = response.json()["content"];
           }
         } catch (e) {
           console.warn(e.message);
-          filesContent.push({ pathSentence, content: null });
         }
+        raw = raw.replace(item.replace, content);
       }
-      filesContent.forEach((i) => {
-        raw = raw.replace(i.pathSentence, i.content);
+      requestBody.raw = raw;
+    } catch (e) {
+      console.warn(e);
+    }
+  },
+
+  async base64EncodeString(requestBody) {
+    let { mode, raw } = requestBody;
+    if (mode !== "raw") {
+      throw new Error("Raw mode is required");
+    }
+    try {
+      const regex = /\{'(.*?)' \| base64_encode\}/g;
+      const regexExtracValue = /\{'(.*?)' \| base64_encode\}/;
+      const matchesValues = (raw.match(regex) ?? []).map((item) => {
+        return {
+          value: item.match(regexExtracValue)[1] ?? null,
+          replace: item,
+        };
+      });
+      matchesValues.forEach((item) => {
+        raw = raw.replace(item.replace, btoa(item.value));
       });
       requestBody.raw = raw;
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   },
 };
+
 utils.waitUntilDone(
   (async () => {
     const { body } = pm.request;
+    await utils.base64EncodeString(body);
     await utils.inyectedBase64FileRequiered(body);
   })()
 );
