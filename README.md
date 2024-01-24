@@ -1,5 +1,5 @@
 # Postman Utils
-Postman Utils es un conjuto de utilidades que ayudaran a explotar las maximas capacidades de postman, y te ayudaran a ahorrate tiempo en ciertas caracteristicas para tus colecciones.
+Postman Utils es un **Pre-Request Scritp** que contiene una siere de utilidades que postman no incorpora y otras que no nos permite directamente, el cual se logra mendiante un pequeño servidor web.
 
 ## Setup
 Para hacer el uso de las utilidades, debemos copiar el contenido del archivo `postman-utils.js`, en la pestaña **Pre-request Script** de nuestra coleccion (Si tenemos mas de una coleccion debemos agreagarlo en cada una de ellas)
@@ -7,12 +7,12 @@ Para hacer el uso de las utilidades, debemos copiar el contenido del archivo `po
 
 
 ## Servidor
-Para la utilizacion de algunas de las utilidades, se requiere ejecutar un servidor desarrollado en NestJS, para algunas funciones como la lectura de archivos, guardado entre otras funciones que postman no nos permite directamente, podremos ejecutar el servidor de la siguiente manera.
+Para la utilizacion de algunas de las utilidades, se requiere ejecutar un servidor desarrollado en NestJS, para algunas funciones como la lectura de archivos, guardado entre otras funciones que postman no nos permite directamente, debemos ejecutar el servidor de la siguiente manera.
 ```bash
 npm install
 npm run start
 ```
-El servidor se ejecutara en el puerto `8080`, puede ser cambiado desde el archivo `main.ts`, pero tambien debemos cambiar dicho puerto en nuestro  **Pre-request Script**
+El servidor se ejecutara en el puerto `8080`, puede ser cambiado desde el archivo `main.ts`, pero tambien debemos cambiar dicho puerto en nuestro  **Pre-request Script**.
 
 
 ## Utilidades
@@ -35,6 +35,18 @@ Al agregar esta sentencia `utils.inyectedBase64FileRequiered`, busca mediante re
 ```
 Todos los archivos incluidos son consultados (Cualquier archivo que no exista o sel servidor no responda se asignara el valor null), al terminar de consultar los archivos se inyectara al request el contenido de la peticion, por loque no modificara le body escrito en la peticion.
 ![Texto alternativo](docs/load-file-preview.png)
+
+
+### Conversion a Base64
+Esta utilidad nos permite convertir cualquier cadena de texto contenida en un string JSON o XML, a base64 mediante el uso de un pipe, para utilizarla de la siguiente manera
+```json
+{
+    "username": "{'admin' | base64_encode}",
+    "password": "{'adminPassword' | base64_encode}"
+}
+```
+De esta manera la informacion de nuestro **Request** que cumpla con el formato de los pipe, sera codificada en base64
+
 
 # Referencias
 Codigo original de **utils** creador por [erhhung](https://github.com/erhhung) en el foro **postmanlabs** https://github.com/postmanlabs/postman-app-support/issues/3480#issuecomment-857163165
